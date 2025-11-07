@@ -1,0 +1,51 @@
+#B+ Tree 
+
+import math
+
+class Node:
+    def __init__(self, isLeaf=False):
+        self.keys = []
+        self.isLeaf = isLeaf
+        self.parent = None
+        
+        if isLeaf:
+            self.values = []
+            """Commitments Kartick asked for"""
+            self.LPC = None 
+            self.RPC = None
+        else:
+            self.children = []
+
+class BPlusTree:
+    def __init__(self, order=5):
+        self.root = Node(isLeaf=True)
+        self.order = order
+        self.max_keys = order - 1
+        self.min_keys = math.ceil(order / 2) - 1
+        self.actual_height = 1
+
+    def search(self, key):
+        node = self.root
+
+        #Internal nodes
+        while not node.isLeaf:
+            i = 0
+            while i < len(node.keys) and key >= node.keys[i]:
+                i += 1
+            node = node.children[i]
+
+        #Leaf nodes 
+        for i in range(len(node.keys)):
+            if node.keys[i] == key:
+                return node.values[i]
+
+        return None
+
+    def find_leaf(self, key):
+      node = self.root 
+      while node.isLeaf == False:
+        i = 0
+        while i < len(node.keys) and key >= node.keys[i]:
+            i = i + 1
+        node = node.children[i]  
+        return node  
