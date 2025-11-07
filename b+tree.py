@@ -1,5 +1,3 @@
-
-
 #B+ Tree
 
 import math
@@ -14,13 +12,14 @@ class Node:
       if self.isLeaf:
         self.values = []
         self.next = None
+        self.commitment = None
       else:
         self.children = []
 
 
 class BPlusTree:
-  def __init__(self, order=4):
-    self.root = Node(isLeaf=true)
+  def __init__(self, order=5):
+    self.root = Node(isLeaf=True)
     self.order = order
     self.max_keys = order - 1
     self.min_keys = math.ceil(order / 2) - 1
