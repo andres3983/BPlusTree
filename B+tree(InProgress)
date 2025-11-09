@@ -1,5 +1,4 @@
-#B+ Tree 
-
+# B+ Tree
 import math
 
 class Node:
@@ -7,14 +6,14 @@ class Node:
         self.keys = []
         self.isLeaf = isLeaf
         self.parent = None
-        
+
         if isLeaf:
             self.values = []
-            """Commitments Kartick asked for"""
-            self.LPC = None 
-            self.RPC = None
+            self.LPC = None   # Left Pointer Commitment
+            self.RPC = None   # Right Pointer Commitment
         else:
             self.children = []
+
 
 class BPlusTree:
     def __init__(self, order=5):
@@ -25,27 +24,52 @@ class BPlusTree:
         self.actual_height = 1
 
     def search(self, key):
+        leaf = self.find_leaf(key)
+
+        # Search the leaf node for the key
+        for i in range(len(leaf.keys)):
+            if leaf.keys[i] == key:
+                return leaf.values[i]
+
+        return None
+
+    def find_leaf(self, key):
         node = self.root
 
-        #Internal nodes
+        # Go through internal nodes until leaf reached
         while not node.isLeaf:
             i = 0
             while i < len(node.keys) and key >= node.keys[i]:
                 i += 1
             node = node.children[i]
 
-        #Leaf nodes 
-        for i in range(len(node.keys)):
-            if node.keys[i] == key:
-                return node.values[i]
+        return node
 
-        return None
+    def insert(self, key, value):
+        leaf = self.find_leaf(key)
 
-    def find_leaf(self, key):
-      node = self.root 
-      while node.isLeaf == False:
         i = 0
-        while i < len(node.keys) and key >= node.keys[i]:
+        while i < len(leaf.keys) and leaf.keys[i] < key:
+            i += 1
+        leaf.keys.insert(i, key)
+        leaf.values.insert(i, value)
+
+        # check overflow
+        if len(leaf.keys) > self.max_keys:
+            self.split_leaf(leaf)
+            overflow = True 
+    
+    def split_leaf(self, leaf):
+      newLeaf = Node(isLeaf = True)
+      mid = math.ceil(self.order / 2)
+      promotedKey = newLeaf.keys[mid]
+
+   # Node.keys = Node.keys[mid + 1:]
+
+
+
+
+
             i = i + 1
         node = node.children[i]  
         return node  
