@@ -48,6 +48,7 @@ class BPlusTree:
     def insert(self, key, value):
         leaf = self.find_leaf(key)
 
+        """Insert when at the leaf level"""
         i = 0
         while i < len(leaf.keys) and leaf.keys[i] < key:
             i += 1
@@ -57,8 +58,8 @@ class BPlusTree:
         # check overflow
         if len(leaf.keys) > self.max_keys:
             self.split_leaf(leaf)
-            overflow = True 
-    
+            overflow = True
+
     def split_leaf(self, leaf):
       newLeaf = Node(isLeaf = True)
       mid = math.ceil(self.order / 2)
@@ -66,10 +67,3 @@ class BPlusTree:
 
    # Node.keys = Node.keys[mid + 1:]
 
-
-
-
-
-            i = i + 1
-        node = node.children[i]  
-        return node  
