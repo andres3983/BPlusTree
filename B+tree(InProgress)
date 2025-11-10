@@ -30,7 +30,6 @@ class BPlusTree:
         for i in range(len(leaf.keys)):
             if leaf.keys[i] == key:
                 return leaf.values[i]
-
         return None
 
     def find_leaf(self, key):
@@ -60,10 +59,27 @@ class BPlusTree:
             self.split_leaf(leaf)
             overflow = True
 
-    def split_leaf(self, leaf):
-      newLeaf = Node(isLeaf = True)
-      mid = math.ceil(self.order / 2)
-      promotedKey = newLeaf.keys[mid]
+        #If overflow happens - split
+        def split_leaf(self, leaf):
+        newLeaf = Node(isLeaf=True)
 
-   # Node.keys = Node.keys[mid + 1:]
+        mid = math.ceil(self.order / 2)
 
+        #old leaf on left half
+        newLeaf.keys = leaf.keys[mid:]
+        newLeaf.values = leaf.values[mid:]
+
+        #new leaf on right half
+        leaf.keys = leaf.keys[:mid]
+        leaf.values = leaf.values[:mid]
+
+        newLeaf.RPC = leaf.RPC
+        if newLeaf.RPC is not None:
+            newLeaf.RPC.LPC = newLeaf
+
+        leaf.RPC = newLeaf
+        newLeaf.LPC = leaf
+
+        promotedKey = newLeaf.keys[0]
+
+        self.insert_into_parent(leaf, promotedKey, newLeaf)
