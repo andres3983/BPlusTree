@@ -9,8 +9,8 @@ class Node:
 
         if isLeaf:
             self.values = []
-            self.LPC = None   # Left Pointer Commitment
-            self.RPC = None   # Right Pointer Commitment
+            self.LPC = None
+            self.RPC = None
         else:
             self.children = []
 
@@ -20,13 +20,13 @@ class BPlusTree:
         self.root = Node(isLeaf=True)
         self.order = order
         self.max_keys = order - 1
-        self.min_keys = math.ceil(order / 2) - 1
+        self.min_keys = math.ceil(order/2) - 1
         self.actual_height = 1
 
     def search(self, key):
         leaf = self.find_leaf(key)
 
-        # Search the leaf node for the key
+        # look through leaf keys
         for i in range(len(leaf.keys)):
             if leaf.keys[i] == key:
                 return leaf.values[i]
@@ -34,52 +34,56 @@ class BPlusTree:
 
     def find_leaf(self, key):
         node = self.root
-
-        # Go through internal nodes until leaf reached
+        # move down until leaf
         while not node.isLeaf:
             i = 0
+            # find child pointer
             while i < len(node.keys) and key >= node.keys[i]:
                 i += 1
             node = node.children[i]
-
         return node
 
     def insert(self, key, value):
         leaf = self.find_leaf(key)
 
-        """Insert when at the leaf level"""
+        # find the right place to put it
         i = 0
         while i < len(leaf.keys) and leaf.keys[i] < key:
             i += 1
+
         leaf.keys.insert(i, key)
         leaf.values.insert(i, value)
 
-        # check overflow
+        # split leaf if overflow
         if len(leaf.keys) > self.max_keys:
             self.split_leaf(leaf)
-            overflow = True
 
-        #If overflow happens - split
-        def split_leaf(self, leaf):
+    def split_leaf(self, leaf):
+
         newLeaf = Node(isLeaf=True)
 
-        mid = math.ceil(self.order / 2)
+        mid = math.ceil(self.order/2)
 
-        #old leaf on left half
+        # right half → new leaf
         newLeaf.keys = leaf.keys[mid:]
         newLeaf.values = leaf.values[mid:]
 
-        #new leaf on right half
+        # left half (old leaf keeps)
         leaf.keys = leaf.keys[:mid]
         leaf.values = leaf.values[:mid]
 
+        # fix linked list
         newLeaf.RPC = leaf.RPC
-        if newLeaf.RPC is not None:
+        if newLeaf.RPC:
             newLeaf.RPC.LPC = newLeaf
 
         leaf.RPC = newLeaf
         newLeaf.LPC = leaf
 
+        # key to push up
         promotedKey = newLeaf.keys[0]
 
         self.insert_into_parent(leaf, promotedKey, newLeaf)
+
+        
+        #def insert_in_parent()
