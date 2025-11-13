@@ -1,4 +1,4 @@
-# B+ Tree
+# B+ Tree (inprogress)
 import math
 
 class Node:
